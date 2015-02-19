@@ -19,9 +19,12 @@ import javax.swing.JToggleButton;
 public class ImageViewer extends JFrame{
 	
 	BufferedImage  image;
-	Rectangle bounds;
+	//BufferedImage  subImage;
+	Rectangle subBounds //Used to get the subImage
+	, scaleBounds;		//Used to setup how the image will be displayed
+	
 	double ratio;
-	JToggleButton tglbtnFill;
+	JToggleButton tglbtnFit;
 	JToggleButton tglbtnMaintainAspectRatio;
 
 	public ImageViewer() {
@@ -31,8 +34,9 @@ public class ImageViewer extends JFrame{
 		try {
 			image = ImageIO.read(new URL("http://upload.wikimedia.org/wikipedia/commons/0/07/Emperor_Penguin_Manchot_empereur.jpg").openStream());
 			ratio = (double) image.getWidth() / image.getHeight();
-			bounds = new Rectangle(0,0, image.getWidth(), image.getHeight());
-			say(bounds);
+			subBounds = new Rectangle(0,0, image.getWidth(), image.getHeight());
+			scaleBounds = new Rectangle(0,0, image.getWidth(), image.getHeight());
+			say(subBounds);
 			say(ratio);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -50,14 +54,14 @@ public class ImageViewer extends JFrame{
 		JButton btnOpenImage = new JButton("Open Image");
 		toolbar.add(btnOpenImage);
 		
-		tglbtnFill = new JToggleButton("Fill");
-		toolbar.add(tglbtnFill);
-		tglbtnFill.setSelected(true);
-		tglbtnFill.addActionListener(new ActionListener() {
+		tglbtnFit = new JToggleButton("Fit");
+		toolbar.add(tglbtnFit);
+		tglbtnFit.setSelected(true);
+		tglbtnFit.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				tglbtnMaintainAspectRatio.setEnabled(tglbtnFill.isSelected());
+				tglbtnMaintainAspectRatio.setEnabled(tglbtnFit.isSelected());
 				repaint();
 			}
 		});
@@ -78,23 +82,82 @@ public class ImageViewer extends JFrame{
 		
 		JButton btnUp = new JButton("Up");
 		movebar.add(btnUp);
+		btnUp.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				scaleBounds.setLocation(scaleBounds.x, scaleBounds.y + 20);
+				repaint();
+			}
+		});
 		
 		JButton btnDown = new JButton("Down");
 		movebar.add(btnDown);
+		btnDown.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				scaleBounds.setLocation(scaleBounds.x, scaleBounds.y - 20);
+				repaint();
+			}
+		});
 		
 		JButton btnLeft = new JButton("Left");
 		movebar.add(btnLeft);
+		btnLeft.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				scaleBounds.setLocation(scaleBounds.x + 20, scaleBounds.y);
+				repaint();
+			}
+		});
 		
 		JButton btnRight = new JButton("Right");
 		movebar.add(btnRight);
+		btnRight.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				scaleBounds.setLocation(scaleBounds.x - 20, scaleBounds.y);
+				repaint();
+			}
+		});
+		
 		
 		JButton btnZoomIn = new JButton("Zoom In");
 		movebar.add(btnZoomIn);
+		btnZoomIn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//subBounds.setBounds(subBounds.x, subBounds.y, subBounds.width-20, subBounds.height-20);
+				scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width+20, scaleBounds.height+20);
+				repaint();
+			}
+		});
 		
 		JButton btnZoomOut = new JButton("Zoom Out");
 		movebar.add(btnZoomOut);
+		btnZoomOut.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//subBounds.setBounds(subBounds.x, subBounds.y, subBounds.width-20, subBounds.height-20);
+				scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width-20, scaleBounds.height-20);
+				repaint();
+			}
+		});
 		setVisible(true);
 	}
+	
+//	private void render(){
+//		
+//		
+//		
+//		
+//		repaint();
+//	}
 
 	private void say(Object s) {
 		System.out.println(s);
