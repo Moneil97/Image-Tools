@@ -49,7 +49,7 @@ public class Display extends JPanel{
 			}
 		}else{
 			Rectangle scaleBounds = parent.scaleBounds;
-			Image scaleImage = parent.image.getScaledInstance(scaleBounds.width, scaleBounds.height, Image.SCALE_SMOOTH);
+			Image scaleImage = parent.image.getScaledInstance(scaleBounds.width, scaleBounds.height, (parent.fast? Image.SCALE_FAST: Image.SCALE_SMOOTH));
 			g1.drawImage(scaleImage, scaleBounds.x, scaleBounds.y, null);
 		}
 	}

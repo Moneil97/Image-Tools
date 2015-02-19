@@ -3,6 +3,8 @@ package Viewer;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JToggleButton;
 
 import java.awt.BorderLayout;
 import java.awt.Point;
@@ -18,19 +20,16 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 
-import javax.swing.JButton;
-import javax.swing.JToggleButton;
-
 @SuppressWarnings("serial")
 public class ImageViewer extends JFrame{
 	
 	BufferedImage  image;
-	Rectangle scaleBounds;		//Used to setup how the image will be displayed
+	Rectangle scaleBounds;
 	double ratio;
 	JToggleButton tglbtnFit;
 	JToggleButton tglbtnMaintainAspectRatio;
-	private boolean mouseHeld;
-	private Point start = null;
+	private Point lastLocation = null;
+	public boolean fast;
 
 	public ImageViewer() {
 		
@@ -60,7 +59,7 @@ public class ImageViewer extends JFrame{
 		
 		tglbtnFit = new JToggleButton("Fit");
 		toolbar.add(tglbtnFit);
-		tglbtnFit.setSelected(true);
+		//tglbtnFit.setSelected(true);
 		tglbtnFit.addActionListener(new ActionListener() {
 			
 			@Override
@@ -71,7 +70,7 @@ public class ImageViewer extends JFrame{
 		});
 		
 		tglbtnMaintainAspectRatio = new JToggleButton("Maintain Aspect Ratio");
-		tglbtnMaintainAspectRatio.setSelected(true);
+		//tglbtnMaintainAspectRatio.setSelected(true);
 		toolbar.add(tglbtnMaintainAspectRatio);
 		tglbtnMaintainAspectRatio.addActionListener(new ActionListener() {
 			
@@ -90,7 +89,7 @@ public class ImageViewer extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				up();
+				up(20);
 			}
 		});
 		
@@ -100,7 +99,7 @@ public class ImageViewer extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				down();
+				down(20);
 			}
 		});
 		
@@ -110,7 +109,7 @@ public class ImageViewer extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				left();
+				left(20);
 			}
 		});
 		
@@ -120,7 +119,7 @@ public class ImageViewer extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				right();
+				right(20);
 			}
 		});
 		
@@ -166,36 +165,68 @@ public class ImageViewer extends JFrame{
 			
 			@Override
 			public void mouseMoved(MouseEvent e) {
-				start = e.getPoint();
+				lastLocation = e.getPoint();
 			}
 			
 			@Override
 			public void mouseDragged(MouseEvent e) {
-
-				int xDist = start.x - e.getX();
-				int yDist = start.y - e.getY();
-
-				if (xDist >= 20) {
-					say("right");
-					right();
-					start.setLocation(start.x - 20, start.y);
-				} else if (xDist <= -20) {
-					say("left");
-					left();
-					start.setLocation(start.x + 20, start.y);
-				}
-
-				if (yDist >= 20) {
-					say("down");
-					down();
-					start.setLocation(start.x, start.y - 20);
-				} else if (yDist <= -20) {
-					say("up");
-					up();
-					start.setLocation(start.x, start.y + 20);
-				}
+				
+				int xDist, yDist, scale = 1;
+				
+				do{
+					xDist = lastLocation.x - e.getX();
+					yDist = lastLocation.y - e.getY();
+	
+					if (xDist >= scale) {
+						right(scale);
+						lastLocation.setLocation(lastLocation.x - scale, lastLocation.y);
+					} else if (xDist <= -scale) {
+						left(scale);
+						lastLocation.setLocation(lastLocation.x + scale, lastLocation.y);
+					}
+	
+					if (yDist >= scale) {
+						down(scale);
+						lastLocation.setLocation(lastLocation.x, lastLocation.y - scale);
+					} else if (yDist <= -scale) {
+						up(scale);
+						lastLocation.setLocation(lastLocation.x, lastLocation.y + scale);
+					}
+				}while(xDist >= scale || xDist <= -scale || yDist >= scale || yDist <= -scale);
 			}
 				
+		});
+		
+		this.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				fast = false;
+				repaint();
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				fast = true;
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
 		});
 		
 		setVisible(true);
@@ -204,32 +235,32 @@ public class ImageViewer extends JFrame{
 	
 	
 	private void zoomIn(){
-		scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width+20, scaleBounds.height+20);
+		scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width+40, scaleBounds.height+40);
 		repaint();
 	}
 	
 	private void zoomOut(){
-		scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width-20, scaleBounds.height-20);
+		scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width-40, scaleBounds.height-40);
 		repaint();
 	}
 	
-	private void left(){
-		scaleBounds.setLocation(scaleBounds.x + 20, scaleBounds.y);
+	private void left(int scale){
+		scaleBounds.setLocation(scaleBounds.x + scale, scaleBounds.y);
 		repaint();
 	}
 	
-	private void right(){
-		scaleBounds.setLocation(scaleBounds.x - 20, scaleBounds.y);
+	private void right(int scale){
+		scaleBounds.setLocation(scaleBounds.x - scale, scaleBounds.y);
 		repaint();
 	}
 	
-	private void up(){
-		scaleBounds.setLocation(scaleBounds.x, scaleBounds.y + 20);
+	private void up(int scale){
+		scaleBounds.setLocation(scaleBounds.x, scaleBounds.y + scale);
 		repaint();
 	}
 	
-	private void down(){
-		scaleBounds.setLocation(scaleBounds.x, scaleBounds.y - 20);
+	private void down(int scale){
+		scaleBounds.setLocation(scaleBounds.x, scaleBounds.y - scale);
 		repaint();
 	}
 
