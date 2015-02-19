@@ -26,24 +26,23 @@ public class Display extends JPanel{
 		if (parent.tglbtnFit.isSelected()){
 			
 			if (parent.tglbtnMaintainAspectRatio.isSelected()){
-//				int width = image.getWidth();
-//				int height = image.getHeight();
-//				
-//				if (width > this.getWidth()){
-//					width = this.getWidth();
-//				}
-//				
-//				height = (int) (width / ratio);
-//				
-//				if (height > this.getHeight()){
-//					height = this.getHeight();
-//					width = (int) (height * ratio);
-//				}
-//				g1.drawImage(image.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0, 0, null);
+				int width = image.getWidth();
+				int height = image.getHeight();
 				
-				Bounds scale = scaleBounds(image.getWidth(), image.getHeight(), ratio);
+				if (width > this.getWidth()){
+					width = this.getWidth();
+				}
 				
-				g1.drawImage(image.getScaledInstance(scale.width, scale.height, Image.SCALE_SMOOTH), 0, 0, null);
+				height = (int) (width / ratio);
+				
+				if (height > this.getHeight()){
+					height = this.getHeight();
+					width = (int) (height * ratio);
+				}
+				g1.drawImage(image.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0, 0, null);
+				
+//				Bounds scale = scaleBounds(image.getWidth(), image.getHeight(), ratio);
+//				g1.drawImage(image.getScaledInstance(scale.width, scale.height, Image.SCALE_SMOOTH), 0, 0, null);
 				
 			}else{
 				g1.drawImage(image.getScaledInstance(this.getWidth(), this.getHeight(), Image.SCALE_SMOOTH), 0, 0, null);
@@ -56,34 +55,34 @@ public class Display extends JPanel{
 	}
 	
 	
-	private Bounds scaleBounds (int width, int height, double ratio){
-		
-		if (width > this.getWidth()){
-			width = this.getWidth();
-		}
-		
-		height = (int) (width / ratio);
-		
-		if (height > this.getHeight()){
-			height = this.getHeight();
-			width = (int) (height * ratio);
-		}
-		
-		return new Bounds(width, height);
-	}
+//	private Bounds scaleBounds (int width, int height, double ratio){
+//		
+//		if (width > this.getWidth()){
+//			width = this.getWidth();
+//		}
+//		
+//		height = (int) (width / ratio);
+//		
+//		if (height > this.getHeight()){
+//			height = this.getHeight();
+//			width = (int) (height * ratio);
+//		}
+//		
+//		return new Bounds(width, height);
+//	}
 	
 }
 
-class Bounds{
-	
-	int width, height;
-	
-	public Bounds(int width, int height){
-		this.width = width;
-		this.height = height;
-	}
-	
-}
+//class Bounds{
+//	
+//	int width, height;
+//	
+//	public Bounds(int width, int height){
+//		this.width = width;
+//		this.height = height;
+//	}
+//	
+//}
 
 
 

@@ -8,6 +8,8 @@ import java.awt.BorderLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -19,10 +21,7 @@ import javax.swing.JToggleButton;
 public class ImageViewer extends JFrame{
 	
 	BufferedImage  image;
-	//BufferedImage  subImage;
-	Rectangle subBounds //Used to get the subImage
-	, scaleBounds;		//Used to setup how the image will be displayed
-	
+	Rectangle scaleBounds;		//Used to setup how the image will be displayed
 	double ratio;
 	JToggleButton tglbtnFit;
 	JToggleButton tglbtnMaintainAspectRatio;
@@ -34,9 +33,8 @@ public class ImageViewer extends JFrame{
 		try {
 			image = ImageIO.read(new URL("http://upload.wikimedia.org/wikipedia/commons/0/07/Emperor_Penguin_Manchot_empereur.jpg").openStream());
 			ratio = (double) image.getWidth() / image.getHeight();
-			subBounds = new Rectangle(0,0, image.getWidth(), image.getHeight());
 			scaleBounds = new Rectangle(0,0, image.getWidth(), image.getHeight());
-			say(subBounds);
+			say(scaleBounds);
 			say(ratio);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -131,9 +129,7 @@ public class ImageViewer extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//subBounds.setBounds(subBounds.x, subBounds.y, subBounds.width-20, subBounds.height-20);
-				scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width+20, scaleBounds.height+20);
-				repaint();
+				zoomIn();
 			}
 		});
 		
@@ -143,11 +139,28 @@ public class ImageViewer extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//subBounds.setBounds(subBounds.x, subBounds.y, subBounds.width-20, subBounds.height-20);
-				scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width-20, scaleBounds.height-20);
-				repaint();
+				zoomOut();
 			}
 		});
+		
+		
+		this.addMouseWheelListener(new MouseWheelListener() {
+			
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				
+				int scrolls = e.getWheelRotation();
+				
+				if (scrolls > 0)
+					for (int i=0; i < scrolls; i++)
+						zoomOut();
+				else if (scrolls < 0)
+					for (int i=0; i < scrolls*-1; i++)
+						zoomIn();
+			}
+		});
+		
+		
 		setVisible(true);
 	}
 	
@@ -158,6 +171,16 @@ public class ImageViewer extends JFrame{
 //		
 //		repaint();
 //	}
+	
+	private void zoomIn(){
+		scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width+20, scaleBounds.height+20);
+		repaint();
+	}
+	
+	private void zoomOut(){
+		scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width-20, scaleBounds.height-20);
+		repaint();
+	}
 
 	private void say(Object s) {
 		System.out.println(s);
