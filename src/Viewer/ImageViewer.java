@@ -6,6 +6,8 @@ import javax.swing.JPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -17,7 +19,7 @@ import javax.swing.JToggleButton;
 public class ImageViewer extends JFrame{
 	
 	BufferedImage  image;
-	 Rectangle bounds;
+	Rectangle bounds;
 	double ratio;
 	JToggleButton tglbtnFill;
 	JToggleButton tglbtnMaintainAspectRatio;
@@ -51,10 +53,25 @@ public class ImageViewer extends JFrame{
 		tglbtnFill = new JToggleButton("Fill");
 		toolbar.add(tglbtnFill);
 		tglbtnFill.setSelected(true);
+		tglbtnFill.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				tglbtnMaintainAspectRatio.setEnabled(tglbtnFill.isSelected());
+				repaint();
+			}
+		});
 		
 		tglbtnMaintainAspectRatio = new JToggleButton("Maintain Aspect Ratio");
 		tglbtnMaintainAspectRatio.setSelected(true);
 		toolbar.add(tglbtnMaintainAspectRatio);
+		tglbtnMaintainAspectRatio.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				repaint();
+			}
+		});
 		
 		JPanel movebar = new JPanel();
 		getContentPane().add(movebar, BorderLayout.SOUTH);
