@@ -5,9 +5,13 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import java.awt.BorderLayout;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
@@ -25,6 +29,8 @@ public class ImageViewer extends JFrame{
 	double ratio;
 	JToggleButton tglbtnFit;
 	JToggleButton tglbtnMaintainAspectRatio;
+	private boolean mouseHeld;
+	private Point start = null;
 
 	public ImageViewer() {
 		
@@ -84,8 +90,7 @@ public class ImageViewer extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				scaleBounds.setLocation(scaleBounds.x, scaleBounds.y + 20);
-				repaint();
+				up();
 			}
 		});
 		
@@ -95,8 +100,7 @@ public class ImageViewer extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				scaleBounds.setLocation(scaleBounds.x, scaleBounds.y - 20);
-				repaint();
+				down();
 			}
 		});
 		
@@ -106,8 +110,7 @@ public class ImageViewer extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				scaleBounds.setLocation(scaleBounds.x + 20, scaleBounds.y);
-				repaint();
+				left();
 			}
 		});
 		
@@ -117,8 +120,7 @@ public class ImageViewer extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				scaleBounds.setLocation(scaleBounds.x - 20, scaleBounds.y);
-				repaint();
+				right();
 			}
 		});
 		
@@ -160,17 +162,46 @@ public class ImageViewer extends JFrame{
 			}
 		});
 		
+		this.addMouseMotionListener(new MouseMotionListener() {
+			
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				start = e.getPoint();
+			}
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+
+				int xDist = start.x - e.getX();
+				int yDist = start.y - e.getY();
+
+				if (xDist >= 20) {
+					say("right");
+					right();
+					start.setLocation(start.x - 20, start.y);
+				} else if (xDist <= -20) {
+					say("left");
+					left();
+					start.setLocation(start.x + 20, start.y);
+				}
+
+				if (yDist >= 20) {
+					say("down");
+					down();
+					start.setLocation(start.x, start.y - 20);
+				} else if (yDist <= -20) {
+					say("up");
+					up();
+					start.setLocation(start.x, start.y + 20);
+				}
+			}
+				
+		});
 		
 		setVisible(true);
 	}
 	
-//	private void render(){
-//		
-//		
-//		
-//		
-//		repaint();
-//	}
+	
 	
 	private void zoomIn(){
 		scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width+20, scaleBounds.height+20);
@@ -179,6 +210,26 @@ public class ImageViewer extends JFrame{
 	
 	private void zoomOut(){
 		scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width-20, scaleBounds.height-20);
+		repaint();
+	}
+	
+	private void left(){
+		scaleBounds.setLocation(scaleBounds.x + 20, scaleBounds.y);
+		repaint();
+	}
+	
+	private void right(){
+		scaleBounds.setLocation(scaleBounds.x - 20, scaleBounds.y);
+		repaint();
+	}
+	
+	private void up(){
+		scaleBounds.setLocation(scaleBounds.x, scaleBounds.y + 20);
+		repaint();
+	}
+	
+	private void down(){
+		scaleBounds.setLocation(scaleBounds.x, scaleBounds.y - 20);
 		repaint();
 	}
 
