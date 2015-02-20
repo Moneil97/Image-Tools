@@ -47,7 +47,8 @@ public class ImageManager {
 	}
 	
 	public BufferedImage nextImage(){
-		imageNum ++;
+		if (imageNum < photos.size())
+			imageNum ++;
 		try {
 			return ImageIO.read(photos.get(imageNum));
 		} catch (IOException e) {
@@ -57,7 +58,8 @@ public class ImageManager {
 	}
 	
 	public BufferedImage previousImage(){
-		imageNum --;
+		if (imageNum > 0)
+			imageNum --;
 		try {
 			return ImageIO.read(photos.get(imageNum));
 		} catch (IOException e) {
@@ -77,9 +79,14 @@ public class ImageManager {
 
 	public void clear() {
 		photos.clear();
+		imageNum = 0;
 	}
 	
 	public int getImageCount(){
 		return photos.size();
+	}
+	
+	public int getCurrentImageNum(){
+		return imageNum;
 	}
 }

@@ -22,6 +22,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import javax.swing.JLabel;
 
 @SuppressWarnings("serial")
 public class ImageViewer extends JFrame{
@@ -35,6 +36,9 @@ public class ImageViewer extends JFrame{
 	public boolean fast;
 	private Display display;
 	ImageManager images = new ImageManager();
+	private JButton btnNext;
+	private JButton btnPrevious;
+	private JLabel lblOf;
 
 	public ImageViewer() {
 		
@@ -46,6 +50,7 @@ public class ImageViewer extends JFrame{
 		
 		try {
 			setImage(ImageIO.read(new URL("http://upload.wikimedia.org/wikipedia/commons/0/07/Emperor_Penguin_Manchot_empereur.jpg").openStream()));
+			
 			say(scaleBounds);
 			say(ratio);
 		} catch (IOException e) {
@@ -77,8 +82,8 @@ public class ImageViewer extends JFrame{
 					images.clear();
 					images.addImages(file);
 					setImage(images.getFirstImage());
+					updateNextAndPrevious();
 					repaint();
-					
 				}
 			}
 		});
@@ -86,7 +91,6 @@ public class ImageViewer extends JFrame{
 		
 		tglbtnFit = new JToggleButton("Fit");
 		toolbar.add(tglbtnFit);
-		//tglbtnFit.setSelected(true);
 		tglbtnFit.addActionListener(new ActionListener() {
 			
 			@Override
@@ -97,30 +101,37 @@ public class ImageViewer extends JFrame{
 		});
 		
 		tglbtnMaintainAspectRatio = new JToggleButton("Maintain Aspect Ratio");
-		//tglbtnMaintainAspectRatio.setSelected(true);
 		toolbar.add(tglbtnMaintainAspectRatio);
 		
-		JButton btnPrevious = new JButton("Previous");
+		btnPrevious = new JButton("Previous");
 		btnPrevious.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setImage(images.previousImage());
+				updateNextAndPrevious();
 				repaint();
 			}
 		});
 		toolbar.add(btnPrevious);
 		
-		JButton btnNext = new JButton("Next");
+		btnNext = new JButton("Next");
 		btnNext.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setImage(images.nextImage());
+				updateNextAndPrevious();
 				repaint();
 			}
 		});
+		
+		updateNextAndPrevious();
+		
 		toolbar.add(btnNext);
+		
+		lblOf = new JLabel("1 of 1");
+		toolbar.add(lblOf);
 		tglbtnMaintainAspectRatio.addActionListener(new ActionListener() {
 			
 			@Override
@@ -273,6 +284,18 @@ public class ImageViewer extends JFrame{
 	}
 	
 	
+	private void updateNextAndPrevious(){
+		if (images.getCurrentImageNum() >= images.getImageCount()-1)
+			btnNext.setEnabled(false);
+		else
+			btnNext.setEnabled(true);
+		if (images.getCurrentImageNum() <= 0)
+			btnPrevious.setEnabled(false);
+		else
+			btnPrevious.setEnabled(true);
+		
+		if (lblOf != null) lblOf.setText(images.getCurrentImageNum()+1 + " of " + images.getImageCount());
+	}
 	
 	private void zoomIn(){
 		scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width+40, scaleBounds.height+40);
@@ -282,7 +305,7 @@ public class ImageViewer extends JFrame{
 	
 	private void zoomOut(){
 		scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width-40, scaleBounds.height-40);
-		display.updateZoomBounds(scaleBounds);
+		//display.updateZoomBounds(scaleBounds);
 		repaint();
 	}
 	
