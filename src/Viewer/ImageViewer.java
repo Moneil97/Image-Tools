@@ -1,10 +1,12 @@
 package Viewer;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JToggleButton;
+import javax.swing.UIManager;
 
 import java.awt.BorderLayout;
 import java.awt.Point;
@@ -17,6 +19,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -30,15 +33,19 @@ public class ImageViewer extends JFrame{
 	JToggleButton tglbtnMaintainAspectRatio;
 	private Point lastLocation = null;
 	public boolean fast;
+	private Display display;
+	ImageManager images = new ImageManager();
 
 	public ImageViewer() {
+		
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}catch(Exception e){};
 		
 		setSize(510,536);
 		
 		try {
-			image = ImageIO.read(new URL("http://upload.wikimedia.org/wikipedia/commons/0/07/Emperor_Penguin_Manchot_empereur.jpg").openStream());
-			ratio = (double) image.getWidth() / image.getHeight();
-			scaleBounds = new Rectangle(0,0, image.getWidth(), image.getHeight());
+			setImage(ImageIO.read(new URL("http://upload.wikimedia.org/wikipedia/commons/0/07/Emperor_Penguin_Manchot_empereur.jpg").openStream()));
 			say(scaleBounds);
 			say(ratio);
 		} catch (IOException e) {
@@ -48,13 +55,33 @@ public class ImageViewer extends JFrame{
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		
-		Display display = new Display(this);
+		display = new Display(this);
 		getContentPane().add(display, BorderLayout.CENTER);
 		
 		JPanel toolbar = new JPanel();
 		getContentPane().add(toolbar, BorderLayout.NORTH);
 		
 		JButton btnOpenImage = new JButton("Open Image");
+		btnOpenImage.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				JFileChooser chooser = new JFileChooser();
+				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+				if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
+					
+					File file = chooser.getSelectedFile();
+					say(file);
+					
+					images.clear();
+					images.addImages(file);
+					setImage(images.getFirstImage());
+					repaint();
+					
+				}
+			}
+		});
 		toolbar.add(btnOpenImage);
 		
 		tglbtnFit = new JToggleButton("Fit");
@@ -72,6 +99,28 @@ public class ImageViewer extends JFrame{
 		tglbtnMaintainAspectRatio = new JToggleButton("Maintain Aspect Ratio");
 		//tglbtnMaintainAspectRatio.setSelected(true);
 		toolbar.add(tglbtnMaintainAspectRatio);
+		
+		JButton btnPrevious = new JButton("Previous");
+		btnPrevious.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setImage(images.previousImage());
+				repaint();
+			}
+		});
+		toolbar.add(btnPrevious);
+		
+		JButton btnNext = new JButton("Next");
+		btnNext.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setImage(images.nextImage());
+				repaint();
+			}
+		});
+		toolbar.add(btnNext);
 		tglbtnMaintainAspectRatio.addActionListener(new ActionListener() {
 			
 			@Override
@@ -211,22 +260,13 @@ public class ImageViewer extends JFrame{
 			}
 			
 			@Override
-			public void mouseExited(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void mouseExited(MouseEvent arg0) {}
 			
 			@Override
-			public void mouseEntered(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void mouseEntered(MouseEvent arg0) {}
 			
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void mouseClicked(MouseEvent arg0) {}
 		});
 		
 		setVisible(true);
@@ -236,11 +276,13 @@ public class ImageViewer extends JFrame{
 	
 	private void zoomIn(){
 		scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width+40, scaleBounds.height+40);
+		//display.updateZoomBounds(scaleBounds);
 		repaint();
 	}
 	
 	private void zoomOut(){
 		scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width-40, scaleBounds.height-40);
+		display.updateZoomBounds(scaleBounds);
 		repaint();
 	}
 	
@@ -263,8 +305,14 @@ public class ImageViewer extends JFrame{
 		scaleBounds.setLocation(scaleBounds.x, scaleBounds.y - scale);
 		repaint();
 	}
+	
+	private void setImage(BufferedImage image){
+		this.image = image;
+		ratio = (double) image.getWidth() / image.getHeight();
+		scaleBounds = new Rectangle(0,0, image.getWidth(), image.getHeight());
+	}
 
-	private void say(Object s) {
+	public void say(Object s) {
 		System.out.println(s);
 	}
 

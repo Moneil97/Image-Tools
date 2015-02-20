@@ -2,7 +2,11 @@ package Viewer;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
@@ -11,6 +15,7 @@ import javax.swing.JPanel;
 public class Display extends JPanel{
 
 	private ImageViewer parent;
+	protected Point mouse;
 	
 	public Display(ImageViewer parent) {
 		this.parent = parent;
@@ -54,6 +59,20 @@ public class Display extends JPanel{
 		}
 	}
 	
+	public void updateZoomBounds(Rectangle bounds){
+		
+		//Point mouse = mouse//MouseInfo.getPointerInfo().getLocation();
+//		parent.say(mouse);
+//		int x = mouse.x;
+//		
+//		int distFromCenterX = this.getWidth()/2 - x;
+//		
+//		parent.say(distFromCenterX);
+//		
+//		bounds.setLocation(bounds.x + distFromCenterX , bounds.y);
+		
+		
+	}
 	
 //	private Bounds scaleBounds (int width, int height, double ratio){
 //		
