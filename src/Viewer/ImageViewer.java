@@ -3,6 +3,7 @@ package Viewer;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JToggleButton;
@@ -22,6 +23,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+
 import javax.swing.JLabel;
 
 @SuppressWarnings("serial")
@@ -46,7 +48,7 @@ public class ImageViewer extends JFrame{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}catch(Exception e){};
 		
-		setSize(510,536);
+		setSize(643,584);
 		
 		try {
 			setImage(ImageIO.read(new URL("http://upload.wikimedia.org/wikipedia/commons/0/07/Emperor_Penguin_Manchot_empereur.jpg").openStream()));
@@ -66,7 +68,7 @@ public class ImageViewer extends JFrame{
 		JPanel toolbar = new JPanel();
 		getContentPane().add(toolbar, BorderLayout.NORTH);
 		
-		JButton btnOpenImage = new JButton("Open Image");
+		JButton btnOpenImage = new JButton("Open File(s)");
 		btnOpenImage.addActionListener(new ActionListener() {
 			
 			@Override
@@ -87,6 +89,31 @@ public class ImageViewer extends JFrame{
 				}
 			}
 		});
+		
+		JButton btnOpenLinkImage = new JButton("Open Link");
+		btnOpenLinkImage.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String link = JOptionPane.showInputDialog("Image link: (link must end in: .jpg, .png, .gif, .jpeg, .bmp, .wbmp)", "http://upload.wikimedia.org/wikipedia/commons/0/07/Emperor_Penguin_Manchot_empereur.jpg");
+				
+				if (link != null){
+					try {
+						setImage(ImageIO.read(new URL(link)));
+						images.clear();
+						updateNextAndPrevious();
+						lblOf.setText("1 of 1" );
+						repaint();
+						
+					} catch (IOException e1) {
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Error Retrieving image");
+					}
+				}
+				
+			}
+		});
+		toolbar.add(btnOpenLinkImage);
 		toolbar.add(btnOpenImage);
 		
 		tglbtnFit = new JToggleButton("Fit");
