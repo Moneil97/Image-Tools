@@ -44,6 +44,8 @@ public class ImageViewer extends JFrame{
 
 	public ImageViewer() {
 		
+		setTitle("Cameron O'Neil's Image Viewer");
+		
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}catch(Exception e){};
