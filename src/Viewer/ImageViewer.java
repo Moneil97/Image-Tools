@@ -325,13 +325,13 @@ public class ImageViewer extends JFrame{
 	}
 	
 	private void zoomIn(){
-		scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width+40, scaleBounds.height+40);
+		scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width+40, scaleBounds.height+(int) (40 / ratio));
 		//display.updateZoomBounds(scaleBounds);
 		repaint();
 	}
 	
 	private void zoomOut(){
-		scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width-40, scaleBounds.height-40);
+		scaleBounds.setBounds(scaleBounds.x, scaleBounds.y, scaleBounds.width-40, scaleBounds.height- (int) (40 / ratio));
 		//display.updateZoomBounds(scaleBounds);
 		repaint();
 	}
